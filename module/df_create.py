@@ -38,43 +38,48 @@ df["neverSmoked"] = np.nan
 df["previouslySmoked"] = np.nan
 df["currentlySmoking"] = np.nan
 
-
+df.loc[np.isnan(df['noOfCigarettesPreviouslyPerDay']), ['noOfCigarettesPreviouslyPerDay']] = 0
+df.loc[np.isnan(df['noOfCigarettesPerDay']), ['noOfCigarettesPerDay']] = 0
+df.loc[df['noOfCigarettesPerDay'] < 0, ['noOfCigarettesPerDay']] = np.nan
 
 for index, row in df.iterrows():
-    row["systolicBloodPressure0"] = (row["systolicBloodPressure0"] + row["systolicBloodPressure1"]) / 2
-    row["diastolicBloodPressure0"] = (row["diastolicBloodPressure0"] + row["diastolicBloodPressure1"]) / 2
+    df["systolicBloodPressure0"] = (row["systolicBloodPressure0"] + row["systolicBloodPressure1"]) / 2
+    df["diastolicBloodPressure0"] = (row["diastolicBloodPressure0"] + row["diastolicBloodPressure1"]) / 2
 
-    if row["noOfCigarettesPreviouslyPerDay"] == np.nan:
-        row["noOfCigarettesPreviouslyPerDay"] = 0
+    mask = (df["noOfCigarettesPreviouslyPerDay"] == np.nan)
+    df.loc[mask, "noOfCigarettesPreviouslyPerDay"] = 0
 
-    if row["noOfCigarettesPerDay"] == np.nan:
-        row["noOfCigarettesPerDay"] = 0
-    elif row["noOfCigarettesPerDay"] < 0:
-        row["noOfCigarettesPerDay"] = np.nan
+    if df["noOfCigarettesPreviouslyPerDay"][index] == np.nan:
+        df["noOfCigarettesPreviouslyPerDay"][index] = 0
 
-    if row["smokingStatus"] == 0:
-        row["neverSmoked"] = 1
-        row["previouslySmoked"] = 0
-        row["currentlySmoking"] = 0
-    elif row["smokingStatus"] == 1:
-        row["neverSmoked"] = 0
-        row["previouslySmoked"] = 1
-        row["currentlySmoking"] = 0
-    elif row["smokingStatus"] == 2:
-        row["neverSmoked"] = 0
-        row["previouslySmoked"] = 0
-        row["currentlySmoking"] = 1
+    if df["noOfCigarettesPerDay"][index] == np.nan:
+        df["noOfCigarettesPerDay"][index] = 0
+    elif df["noOfCigarettesPerDay"][index] < 0:
+        df["noOfCigarettesPerDay"][index] = np.nan
 
-    if row["smoking"] == 2:
-        row["noOfCigarettesPerDay"] = 1
-        row["neverSmoked"] = 0
-        row["previouslySmoked"] = 0
-        row["currentlySmoking"] = 1
+    if df["smokingStatus"][index] == 0:
+        df["neverSmoked"][index] = 1
+        df["previouslySmoked"][index] = 0
+        df["currentlySmoking"][index] = 0
+    elif df["smokingStatus"][index] == 1:
+        df["neverSmoked"][index] = 0
+        df["previouslySmoked"][index] = 1
+        df["currentlySmoking"][index] = 0
+    elif df["smokingStatus"][index] == 2:
+        df["neverSmoked"][index] = 0
+        df["previouslySmoked"][index] = 0
+        df["currentlySmoking"][index] = 1
+
+    if df["smoking"][index] == 2:
+        df["noOfCigarettesPerDay"][index] = 1
+        df["neverSmoked"][index] = 0
+        df["previouslySmoked"][index] = 0
+        df["currentlySmoking"][index] = 1
 
 
 df.drop(inplace=True, columns=["systolicBloodPressure1", "diastolicBloodPressure1"])
 df.rename(index=str, inplace=True, columns={"systolicBloodPressure0": "systolicBloodPressure", "diastolicBloodPressure0": "diastolicBloodPressure"})
-df = df.dropna(subset=["diastolicBloodPressure", "weight", "height", "numberOfCigarettesPerDay", "smoking", "smokingStatus"])
+df = df.dropna(subset=["diastolicBloodPressure", "weight", "height", "noOfCigarettesPerDay", "smoking", "smokingStatus"])
 
 
 y = df["sputumOnMostDays"]
