@@ -14,6 +14,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn import linear_model
+from sklearn import svm
+from sklearn.ensemble import GradientBoostingRegressor
 
 
 client = pymongo.MongoClient('localhost', 27017)  # connects to mongodb server
@@ -39,7 +41,15 @@ X = df.drop(columns=["sputumOnMostDays"])
 #df.describe()
 X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.25, random_state=1337)
 
-reg = linear_model.Ridge(alpha=.5)
+#reg = linear_model.ElasticNet() #score: -1.395
+#reg = linear_model.Ridge() #score: 0.27
+#reg = linear_model.ElasticNetCV() #score: 0.27
+#reg = linear_model.Lasso() #score: -1.395
+#reg = svm.SVR() #0.098
+#reg = GradientBoostingRegressor() #0.27
+
+
+
 reg.fit(X_train, y_train)
 predictions = reg.predict(X_test)
 print(reg.score(X_test, y_test))
@@ -52,7 +62,7 @@ difference.sort_values(inplace=True)
 plt.figure()
 plt.plot(range(0, 6000), difference[:6000])
 #plt.plot(range(0, 100), predictions[100], label="predictions")
-plt.savefig('/tmp/regression_line.png')
+plt.savefig('/tmp/ensemble.png')
 
 def flatten(np_series):
     flat_list = np.Series()
