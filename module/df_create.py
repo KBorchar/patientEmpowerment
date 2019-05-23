@@ -5,8 +5,6 @@
 ### python:
 import pymongo
 from bson.objectid import ObjectId
-import pprint
-import pdb
 import pandas as pd
 import numpy as np
 import pandas_profiling
@@ -28,58 +26,53 @@ collection = db['ahriML']
 #    'dateOfAttendingAssessmentCentre': ['2008-09-02', 'NA', 'NA']
 #}))
 
-cursor = collection.find().limit(100000)  # TODO: dont limit in production
+cursor = collection.find().limit(100000)  # TODO: dont limit once we have more RAM
 df = pd.DataFrame(list(cursor))
 df.replace("NA", np.nan, inplace=True)
 df = df.dropna(subset=["COPD"])
-#df.drop(inplace=True, columns = ["_id", "patientId"])
+df.drop(inplace=True, columns = ["_id", "patientId"])
 
 df["neverSmoked"] = np.nan
 df["previouslySmoked"] = np.nan
 df["currentlySmoking"] = np.nan
 
 df.loc[np.isnan(df['noOfCigarettesPreviouslyPerDay']), ['noOfCigarettesPreviouslyPerDay']] = 0
-df.loc[np.isnan(df['noOfCigarettesPerDay']), ['noOfCigarettesPerDay']] = 0
-df.loc[df['noOfCigarettesPerDay'] < 0, ['noOfCigarettesPerDay']] = np.nan
+df.loc[np.isnan(df['noOfCigarettesPerDay']), ['noOfCigarettesPerDay']] = 0 # assuming no value means patient is non-smoker
+df.loc[df['noOfCigarettesPerDay'] < 0, ['noOfCigarettesPerDay']] = np.nan # less than one per day, don't know or won't tell; barely any occurences
 
-for index, row in df.iterrows():
-    df["systolicBloodPressure0"] = (row["systolicBloodPressure0"] + row["systolicBloodPressure1"]) / 2
-    df["diastolicBloodPressure0"] = (row["diastolicBloodPressure0"] + row["diastolicBloodPressure1"]) / 2
+df.loc[df['smokingStatus'] == -3] = np.nan
+df.loc[df['smoking'] == -3] = np.nan
 
-    mask = (df["noOfCigarettesPreviouslyPerDay"] == np.nan)
-    df.loc[mask, "noOfCigarettesPreviouslyPerDay"] = 0
+df.loc[df['smokingStatus'] == 0, ['neverSmoked']] = 1
+df.loc[df['smokingStatus'] == 0, ['previouslySmoked']] = 0
+df.loc[df['smokingStatus'] == 0, ['currentlySmoking']] = 0
 
-    if df["noOfCigarettesPreviouslyPerDay"][index] == np.nan:
-        df["noOfCigarettesPreviouslyPerDay"][index] = 0
+df.loc[df['smokingStatus'] == 1, ['neverSmoked']] = 0
+df.loc[df['smokingStatus'] == 1, ['previouslySmoked']] = 1
+df.loc[df['smokingStatus'] == 1, ['currentlySmoking']] = 0
 
-    if df["noOfCigarettesPerDay"][index] == np.nan:
-        df["noOfCigarettesPerDay"][index] = 0
-    elif df["noOfCigarettesPerDay"][index] < 0:
-        df["noOfCigarettesPerDay"][index] = np.nan
+df.loc[df['smokingStatus'] == 2, ['neverSmoked']] = 0
+df.loc[df['smokingStatus'] == 2, ['previouslySmoked']] = 0
+df.loc[df['smokingStatus'] == 2, ['currentlySmoking']] = 1
 
-    if df["smokingStatus"][index] == 0:
-        df["neverSmoked"][index] = 1
-        df["previouslySmoked"][index] = 0
-        df["currentlySmoking"][index] = 0
-    elif df["smokingStatus"][index] == 1:
-        df["neverSmoked"][index] = 0
-        df["previouslySmoked"][index] = 1
-        df["currentlySmoking"][index] = 0
-    elif df["smokingStatus"][index] == 2:
-        df["neverSmoked"][index] = 0
-        df["previouslySmoked"][index] = 0
-        df["currentlySmoking"][index] = 1
+df.loc[df['smoking'] == 2, ['noOfCigarettesPerDay']] = 1
+df.loc[df['smoking'] == 2, ['neverSmoked']] = 0
+df.loc[df['smoking'] == 2, ['previouslySmoked']] = 0
+df.loc[df['smoking'] == 2, ['currentlySmoking']] = 1
 
-    if df["smoking"][index] == 2:
-        df["noOfCigarettesPerDay"][index] = 1
-        df["neverSmoked"][index] = 0
-        df["previouslySmoked"][index] = 0
-        df["currentlySmoking"][index] = 1
+df.loc[df['alcoholFrequency'] == -3, ['alcoholFrequency']] = np.nan # -3 == won't say; not many occurences so we drop those
 
+df.loc[df['diabetes'] == -1, ['diabetes']] = 0 # patient does not know if they have diabetes -> patient does not have it
+df.loc[df['diabetes'] == -3, ['diabetes']] = np.nan # drop the few patients that won't tell if they have diabetes
 
-df.drop(inplace=True, columns=["systolicBloodPressure1", "diastolicBloodPressure1"])
-df.rename(index=str, inplace=True, columns={"systolicBloodPressure0": "systolicBloodPressure", "diastolicBloodPressure0": "diastolicBloodPressure"})
-df = df.dropna(subset=["diastolicBloodPressure", "weight", "height", "noOfCigarettesPerDay", "smoking", "smokingStatus"])
+df.loc[df['wheezeInChestInLastYear'] == -1, ['wheezeInChestInLastYear']] = 0
+df.loc[df['wheezeInChestInLastYear'] == -3, ['wheezeInChestInLastYear']] = np.nan
+
+df['systolicBloodPressure'] = df[['systolicBloodPressure0', 'systolicBloodPressure1']].mean(axis=1)
+df['diastolicBloodPressure'] = df[['diastolicBloodPressure0', 'diastolicBloodPressure1']].mean(axis=1)
+
+df = df.dropna(subset=['diastolicBloodPressure', 'weight', 'height', 'noOfCigarettesPerDay', 'alcoholFrequency', 'diabetes', 'wheezeInChestInLastYear', 'smoking', 'smokingStatus'])
+df.drop(inplace=True, columns=['systolicBloodPressure0', 'systolicBloodPressure1', 'diastolicBloodPressure0', 'diastolicBloodPressure1', 'smoking', 'smokingStatus', 'stoppedSmokingFor6Months'])
 
 
 y = df["sputumOnMostDays"]
@@ -87,7 +80,7 @@ X = df.drop(columns=["sputumOnMostDays"])
 pfr = pandas_profiling.ProfileReport(df)
 pfr.to_file("/tmp/df_report22_5.html")
 df.describe()
-X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.25, random_state=1337)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=1337)
 
 #reg = linear_model.ElasticNet() #score: -1.395
 #reg = linear_model.Ridge() #score: 0.27
@@ -108,33 +101,6 @@ difference.sort_values(inplace=True)
 #pca.fit(X_train)
 #transformed = pca.transform(X_train)
 plt.figure()
-plt.plot(range(0, 6000), difference[:6000])
+plt.plot(range(0, 5000), difference[:5000])
 #plt.plot(range(0, 100), predictions[100], label="predictions")
-plt.savefig('/tmp/rbf.png')
-
-def flatten(np_series):
-    flat_list = np.Series()
-    for list in np_series:
-        for element in list:
-            flat_list.append(element)
-    return flat_list
-
-
-def analyze_NAs(df):
-    column_count = df.shape[0]
-    NA_percentages = np.zeros(column_count)
-    for column_index in range(column_count):
-        column = df.iloc[:, column_index]
-        # pdb.set_trace()
-        counts = column.value_counts(normalize=True, dropna=False)
-        # pdb.set_trace()
-        # if counts[0] is list:
-
-        if "NA" in counts:
-            print(counts["NA"])
-            NA_percentages[column_index] = counts["NA"]
-
-    return
-
-
-#analyze_NAs(df)
+plt.savefig('/tmp/rbf2.png')
