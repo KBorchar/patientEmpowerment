@@ -88,19 +88,20 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random
 #reg = linear_model.Lasso() #score: -1.395
 #reg = svm.SVR() #0.098
 #reg = GradientBoostingRegressor() #0.27
-reg = svm.SVR(kernel='rbf')
 
+lin_regs = [linear_model.ElasticNet(), linear_model.ElasticNetCV(), linear_model.Ridge(), linear_model.Lasso(), svm.SVR(), GradientBoostingRegressor()]
 
-reg.fit(X_train, y_train)
-predictions = reg.predict(X_test)
-print(reg.score(X_test, y_test))
-difference = predictions - y_test
-difference.sort_values(inplace=True)
+for r in lin_regs:
+    r.fit(X_train, y_train)
+    predictions = r.predict(X_test)
+    print(r.score(X_test, y_test))
 
+#difference = predictions - y_test
+#difference.sort_values(inplace=True)
 #pca = PCA()
 #pca.fit(X_train)
 #transformed = pca.transform(X_train)
-plt.figure()
-plt.plot(range(0, 5000), difference[:5000])
+#plt.figure()
+#plt.plot(range(0, 5000), difference[:5000])
 #plt.plot(range(0, 100), predictions[100], label="predictions")
-plt.savefig('/tmp/rbf2.png')
+#plt.savefig('/tmp/rbf2.png')
