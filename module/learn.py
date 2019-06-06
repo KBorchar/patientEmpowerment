@@ -30,6 +30,7 @@ def train_models(df, labels):
 
 def train_imputer(df):
     from sklearn import linear_model
+    from sklearn.experimental import enable_iterative_imputer
     from sklearn.impute import IterativeImputer
 
     imputer = IterativeImputer(verbose=2,
