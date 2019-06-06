@@ -4,7 +4,6 @@
 
 ### python:
 import pymongo
-from bson.objectid import ObjectId
 import pandas as pd
 import numpy as np
 import pandas_profiling
@@ -13,21 +12,15 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn import linear_model
 from sklearn import svm
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn import ensemble
+from sklearn import neighbors
+from sklearn.metrics import confusion_matrix
+import conf_mat
+import helpers
 
+df = helpers.mongo2df('ahriCleaner')
 
-client = pymongo.MongoClient('localhost', 27017)  # connects to mongodb server
-db = client.ukbb  # select database on server ('use ukbb' in shell)
-collection = db['ahriML']
-#pprint.pprint(collection.find_one())  # returns one document from temp4 collection ('db.temp4.findOne()' in shell
-#pprint.pprint(collection.find_one({  # mongo documents are noted as python dictionaries, arrays as python arrays.
-#    'yearOfBirth': 1950,
-#    'monthOfBirth': 3,
-#    'dateOfAttendingAssessmentCentre': ['2008-09-02', 'NA', 'NA']
-#}))
-
-cursor = collection.find().limit(100000)  # TODO: dont limit once we have more RAM
-df = pd.DataFrame(list(cursor))
+'''
 df.replace("NA", np.nan, inplace=True)
 df = df.dropna(subset=["COPD"])
 df.drop(inplace=True, columns = ["_id", "patientId"])
@@ -73,10 +66,12 @@ df['diastolicBloodPressure'] = df[['diastolicBloodPressure0', 'diastolicBloodPre
 
 df = df.dropna(subset=['diastolicBloodPressure', 'weight', 'height', 'noOfCigarettesPerDay', 'alcoholFrequency', 'diabetes', 'wheezeInChestInLastYear', 'smoking', 'smokingStatus'])
 df.drop(inplace=True, columns=['systolicBloodPressure0', 'systolicBloodPressure1', 'diastolicBloodPressure0', 'diastolicBloodPressure1', 'smoking', 'smokingStatus', 'stoppedSmokingFor6Months'])
+'''
 
+label_name = "COPD"
 
-y = df["sputumOnMostDays"]
-X = df.drop(columns=["sputumOnMostDays"])
+y = df[label_name]
+X = df.drop(columns=[label_name])
 pfr = pandas_profiling.ProfileReport(df)
 pfr.to_file("/tmp/df_report22_5.html")
 df.describe()
@@ -89,13 +84,31 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random
 #reg = svm.SVR() #0.098
 #reg = GradientBoostingRegressor() #0.27
 
-lin_regs = [linear_model.ElasticNet(), linear_model.ElasticNetCV(), linear_model.Ridge(), linear_model.Lasso(), svm.SVR(), GradientBoostingRegressor()]
+lin_regs = [linear_model.ElasticNet(), linear_model.ElasticNetCV(), linear_model.Ridge(), linear_model.Lasso(), svm.SVR(), ensemble.GradientBoostingRegressor()]
+classies = [linear_model.LogisticRegressionCV(class_weight='balanced'), linear_model.LogisticRegression(class_weight='balanced')]
 
-for r in lin_regs:
-    r.fit(X_train, y_train)
-    predictions = r.predict(X_test)
-    print(r.score(X_test, y_test))
+#for c in lin_regs:
+#    print(c.__class__)
+#    c.fit(X_train, y_train)
+#    print(c.score(X_test, y_test))
 
+for i, c in enumerate(classies):
+    print(c.__class__.__name__)
+    c.fit(X_train, y_train)
+    preds = c.predict(X_test)
+
+    probabilities = c.predict_proba(X_test)
+    probabilities = np.array(probabilities[:, 0])
+    probabilities.sort()
+    plt.figure()
+    plt.plot(range(0, len(probabilities)), probabilities)
+    plt.savefig('/tmp/probabilities' + label_name + c.__class__.__name__ + '.png')
+
+    print(c.score(X_test, y_test))
+    conf_mat.plot_confusion_matrix(y_test, preds, normalize=True)
+    plt.savefig('/tmp/' + label_name + c.__class__.__name__ + str(i) + '.png')
+
+#predictions = c.predict(X_test)
 #difference = predictions - y_test
 #difference.sort_values(inplace=True)
 #pca = PCA()
