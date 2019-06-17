@@ -3,8 +3,6 @@ def train_models(df, labels):
     from sklearn.model_selection import train_test_split
     import matplotlib.pyplot as plt
     import numpy as np
-    import random
-    from datetime import datetime
     import helpers
 
     plt.figure()

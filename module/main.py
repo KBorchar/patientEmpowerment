@@ -6,14 +6,8 @@
 import helpers
 import learn
 import pandas_profiling
-import random
-from datetime import datetime
 
-
-
-
-#dbname = input("choose db to learn from")
-dbname = 'ahriMocked'
+dbname = input("choose db to learn from")
 df = helpers.mongo2df(f'{dbname}')                          #old: ahriCleaner for 120k datapoints
 pfr = pandas_profiling.ProfileReport(df)
 pfr.to_file(f"/tmp/df_report_mocked{dbname}{helpers.uuid()}.html")
