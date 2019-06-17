@@ -8,3 +8,7 @@ def mongo2df(coll, limit=0):
     df = pd.DataFrame(list(collection.find().limit(limit)))
     df.drop(inplace=True, columns=["_id"])
     return df
+
+def uuid():
+    import uuid
+    return uuid.uuid4().hex

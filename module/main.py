@@ -6,10 +6,17 @@
 import helpers
 import learn
 import pandas_profiling
+import random
+from datetime import datetime
 
-df = helpers.mongo2df('ahriCleaner')
+
+
+
+#dbname = input("choose db to learn from")
+dbname = 'ahriMocked'
+df = helpers.mongo2df(f'{dbname}')                          #old: ahriCleaner for 120k datapoints
 pfr = pandas_profiling.ProfileReport(df)
-pfr.to_file("/tmp/df_report_cleaned.html")
+pfr.to_file(f"/tmp/df_report_mocked{dbname}{helpers.uuid()}.html")
 labels = ["COPD", "asthma", "diabetes", "tuberculosis"]
 models = learn.train_models(df, labels)
 imputer = learn.train_imputer(df)

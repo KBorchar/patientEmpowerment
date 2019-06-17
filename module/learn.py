@@ -3,6 +3,9 @@ def train_models(df, labels):
     from sklearn.model_selection import train_test_split
     import matplotlib.pyplot as plt
     import numpy as np
+    import random
+    from datetime import datetime
+    import helpers
 
     plt.figure()
     models = []
@@ -24,7 +27,7 @@ def train_models(df, labels):
         # conf_mat.plot_confusion_matrix(y_test, preds, normalize=True)
 
     plt.legend(loc='upper left')
-    plt.savefig('/tmp/' + models[i].__class__.__name__ + '.png')
+    plt.savefig(f'/tmp/{models[i].__class__.__name__}{helpers.uuid()}.png')
     return models
 
 
