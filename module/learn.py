@@ -4,7 +4,7 @@ def train_models(df, labels):
     import matplotlib.pyplot as plt
     import numpy as np
     import helpers
-
+    import conf_mat
     plt.figure()
     models = []
 
@@ -19,13 +19,24 @@ def train_models(df, labels):
         probabilities = np.array(probabilities[:, 0])
         probabilities.sort()
         plt.plot(range(0, len(probabilities)), probabilities, label=f'{l}')
-
-        # preds = m.predict(X_test)
-        # print(m.score(X_test, y_test))
-        # conf_mat.plot_confusion_matrix(y_test, preds, normalize=True)
+        print(f'{l}score: {model.score(X_test, y_test)}')
+        '''mocked: 
+        COPDscore: 0.8302
+        asthmascore: 0.8102
+        diabetesscore: 0.7216
+        tuberculosisscore: 0.5938
+        
+        cleaner: 
+        COPDscore: 0.8443811132221518
+        asthmascore: 0.8215115051720498
+        diabetesscore: 0.7262331996340863
+        tuberculosisscore: 0.60432059672085'''
 
     plt.legend(loc='upper left')
     plt.savefig(f'/tmp/{models[i].__class__.__name__}{helpers.uuid()}.png')
+    #preds = m.predict(X_test)
+    # print(m.score(X_test, y_test))
+    #conf_mat.plot_confusion_matrix(y_test, preds, normalize=True)
     return models
 
 
@@ -42,4 +53,3 @@ def train_imputer(df):
 
     imputer.fit(df)
     return imputer
-
