@@ -8,7 +8,7 @@ def train_models(df, labels):
     plt.figure()
     models = []
 
-    for i, l in enumerate(labels):#
+    for i, l in enumerate(labels):
         y = df[l]
         X = df.drop(columns=[l])
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=7)
@@ -45,7 +45,7 @@ def train_imputer(df):
     from sklearn.experimental import enable_iterative_imputer
     from sklearn.impute import IterativeImputer
 
-    imputer = IterativeImputer(verbose=2,
+    imputer = IterativeImputer(verbose=0,
                                estimator=linear_model.LogisticRegression(class_weight="balanced"),
                                sample_posterior=True,
                                n_nearest_features=5,

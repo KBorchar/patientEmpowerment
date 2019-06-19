@@ -12,3 +12,8 @@ def mongo2df(coll, limit=0):
 def uuid():
     import uuid
     return uuid.uuid4().hex
+
+def dump(things, names):
+    from joblib import dump
+    for i, t in enumerate(things):
+        dump(t, f'rest_server/data/models/{names[i]}.joblib')

@@ -14,3 +14,6 @@ pfr.to_file(f"/tmp/df_report_mocked{dbname}{helpers.uuid()}.html")
 labels = ["COPD", "asthma", "diabetes", "tuberculosis"]
 models = learn.train_models(df, labels)
 imputer = learn.train_imputer(df)
+
+helpers.dump(models, labels)
+helpers.dump([imputer], ["imputer"])
