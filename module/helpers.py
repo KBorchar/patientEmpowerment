@@ -68,9 +68,31 @@ def plot_classification_reports(reports, titles=[]):
         plt.savefig(f'/tmp/classification_reports/{titles[i]}_report_{uuid()}.png')
         plt.clf()
 
+def generate_profile_report(df, dbname):
+    import pandas_profiling
+    pandas_profiling.ProfileReport(df).to_file(f"/tmp/profile_reports/r_{dbname}{uuid()}.html")
 
-def parse_db_name(argv):
-    if len(argv) == 1:
-        return input("choose db to learn from")
-    else:
-        return argv[1]
+
+def get_args():
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser()
+    parser.add_argument("-o", "--output", action='store_true')
+    parser.add_argument("-l", "--labels", dest="labels", default='COPD asthma diabetes tuberculosis',
+                        help="provide labels to predict on, separated by spaces, e.g.: \"COPD asthma diabetes\"")
+    parser.add_argument("-c", "--correlator", dest="correlator",
+                        help="name the correlating feature that you want to superimpose onto the plots")
+    parser.add_argument("-db", "--database", dest="dbname", default='ahriMocked',
+                        help="mongo collection to learn from")
+
+
+
+    return parser.parse_args()
+
+def own_predict(intercept, coef, X):
+    import numpy as np
+    return 1 - (1/(1+(np.exp(np.dot(coef, np.ravel(X.values)) + intercept))))
+
+    #thetas = np.dot(coef, np.ravel(X.values)) + intercept
+    #full = np.exp(thetas)
+    #return 1/(1+full)
