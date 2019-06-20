@@ -12,6 +12,7 @@ dbname = helpers.parse_db_name(sys.argv)
 df = helpers.mongo2df(f'{dbname}')
 pfr = pandas_profiling.ProfileReport(df)
 pfr.to_file(f"/tmp/df_report_{dbname}{helpers.uuid()}.html")
+
 labels = ["COPD", "asthma", "diabetes", "tuberculosis"]
 models, classification_reports = learn.train_models(df, labels)
 helpers.plot_classification_reports(classification_reports, labels)
