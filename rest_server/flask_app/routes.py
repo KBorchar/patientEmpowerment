@@ -2,7 +2,7 @@ from flask_app import app, request_parser
 
 from flask import request, jsonify
 
-from ml import models, dataframe_column_labels, imputer, data_cleaner
+from ml import models, model_objects, dataframe_column_labels, imputer
 
 @app.route('/')
 def index():
@@ -18,7 +18,7 @@ def predict():
     diseases, patient_data = request_parser.parse_predict_request(request)
     predictions = dict()
     for disease in diseases:
-        predictions[disease] = models[disease].predict(patient_data)[0]
+        predictions[disease] = model_objects[disease].predict(patient_data)[0]
         print(disease, predictions[disease])
     response = jsonify(predictions)
     return response
@@ -26,20 +26,8 @@ def predict():
 @app.route('/models', methods=['GET'])
 def get_models():
     diseases = request_parser.parse_get_models_request(request)
-    models_response = dict()
+    models_dict = dict()
     for disease in diseases:
-        model = models[disease]
-        features = dataframe_column_labels.copy()
-        label_index = features.index(disease)
-        del(features[label_index])
-        means = imputer.initial_imputer_.statistics_.copy().tolist()
-        del(means[label_index])
-        weights = model.coef_
-        features_dict = dict()
-        for i, feature in enumerate(features):
-            feature_dict = dict()
-            feature_dict["coef"] = weights[0][i]
-            feature_dict["mean"] = means[i]
-            features_dict[feature] = feature_dict
-        models_response[disease] = features_dict
-    return jsonify(models_response)
+        models_dict[disease] = models.get_model_dict(disease)
+    response = jsonify(models_dict)
+    return response

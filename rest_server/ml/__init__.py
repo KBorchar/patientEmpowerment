@@ -4,9 +4,9 @@ from joblib import load
 import json
 
 model_names = ["COPD", "asthma", "diabetes", "tuberculosis"]
-models = {}
+model_objects = {}
 for name in model_names:
-    models[name] = load('data/models/' + name + '.joblib')
+    model_objects[name] = load('data/models/' + name + '.joblib')
 
 imputer = load('data/models/imputer.joblib')
 
