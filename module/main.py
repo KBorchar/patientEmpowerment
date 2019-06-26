@@ -3,18 +3,19 @@
 # http://api.mongodb.com/python/current/tutorial.html
 
 ### python:
+from typing import List
+
 import helpers
 import learn
-import pandas_profiling
-import sys
 
-dbname = helpers.parse_db_name(sys.argv)
-df = helpers.mongo2df(f'{dbname}')
-pfr = pandas_profiling.ProfileReport(df)
-pfr.to_file(f"/tmp/df_report_{dbname}{helpers.uuid()}.html")
+args = helpers.get_args()
+df = helpers.mongo2df(f'{args.dbname}')
 
-labels = ["COPD", "asthma", "diabetes", "tuberculosis"]
-models, classification_reports = learn.train_models(df, labels)
+if args.output:
+    helpers.generate_profile_report(df, args.dbname)
+
+labels = args.labels.split()
+models, classification_reports = learn.train_models(df, labels, args.correlator)
 helpers.plot_classification_reports(classification_reports, labels)
 imputer = learn.train_imputer(df)
 
