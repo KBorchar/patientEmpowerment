@@ -9,6 +9,7 @@ def get_model_dict(disease):
     del(feature_means[label_index])
     weights = model.coef_
     model_dict = dict()
+    model_dict["intercept"] = model.intercept_[0]
     for i, feature_name in enumerate(feature_names):
         feature_dict = dict()
         feature_dict["coef"] = weights[0][i]
