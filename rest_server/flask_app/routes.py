@@ -31,3 +31,8 @@ def get_models():
         models_dict[disease] = models.get_model_dict(disease)
     response = jsonify(models_dict)
     return response
+
+@app.route('/relearn', methods=['GET'])
+def relearn_models():
+    diseases = request_parser.parse_relearn_models_request(request)
+    return "200"
