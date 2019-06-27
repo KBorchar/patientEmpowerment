@@ -1,0 +1,121 @@
+{
+  "COPD": {
+    "title": "COPD",
+    "choices": {
+      "Yes": 1,
+      "No": 0
+    }
+  },
+  "age": {
+    "title": "age",
+    "slider_min": 40,
+    "slider_max": 70
+  },
+  "alcoholFrequency": {
+    "title": "alcoholFrequency",
+    "slider_min": 1,
+    "slider_max": 6
+  },
+  "asthma": {
+    "title": "asthma",
+    "choices": {
+      "Yes": 1,
+      "No": 0
+    }
+  },
+  "coughOnMostDays": {
+    "title": "coughOnMostDays",
+    "choices": {
+      "Yes": 1,
+      "No": 0
+    }
+  },
+  "currentlySmoking": {
+    "title": "currentlySmoking",
+    "choices": {
+      "Yes": 1,
+      "No": 0
+    }
+  },
+  "diabetes": {
+    "title": "diabetes",
+    "choices": {
+      "Yes": 1,
+      "No": 0
+    }
+  },
+  "diastolicBloodPressure": {
+    "title": "diastolicBloodPressure",
+    "slider_min": 47,
+    "slider_max": 142
+  },
+  "height": {
+    "title": "height",
+    "slider_min": 137,
+    "slider_max": 202
+  },
+  "neverSmoked": {
+    "title": "neverSmoked",
+    "choices": {
+      "Yes": 1,
+      "No": 0
+    }
+  },
+  "noOfCigarettesPerDay": {
+    "title": "noOfCigarettesPerDay",
+    "choices": {
+      "Yes": 1,
+      "No": 0
+    }
+  },
+  "noOfCigarettesPreviouslyPerDay": {
+    "title": "noOfCigarettesPreviouslyPerDay",
+    "slider_min": 0,
+    "slider_max": 140
+  },
+  "previouslySmoked": {
+    "title": "previouslySmoked",
+    "choices": {
+      "Yes": 1,
+      "No": 0
+    }
+  },
+  "sex": {
+    "title": "sex",
+    "choices": {
+      "Male": 1,
+      "Female": 0
+    }
+  },
+  "sputumOnMostDays": {
+    "title": "sputumOnMostDays",
+    "choices": {
+      "Yes": 1,
+      "No": 0
+    }
+  },
+  "systolicBloodPressure": {
+    "title": "systolicBloodPressure",
+    "slider_min": 79,
+    "slider_max": 244.5
+  },
+  "tuberculosis": {
+    "title": "tuberculosis",
+    "choices": {
+      "Yes": 1,
+      "No": 0
+    }
+  },
+  "weight": {
+    "title": "weight",
+    "slider_min": 39,
+    "slider_max": 188.1
+  },
+  "wheezeInChestInLastYear": {
+    "title": "wheezeInChestInLastYear",
+    "choices": {
+      "Yes": 1,
+      "No": 0
+    }
+  }
+}

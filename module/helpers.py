@@ -28,19 +28,25 @@ def dump_JSON(columns):
         json.dump(columns, outfile)
 
 
-def dump_config(columns, imputer):
+def dump_config(df, imputer):
     import json
 
+    columns = df.columns.format()
+    minimums = df.min()
+    maximums = df.max()
     f_config = {}
     for i, c in enumerate(columns):
         if imputer.initial_imputer_.statistics_[i] <= 1:
-            f_config[c] = {"title": None,
-                       "choices": None,
+            f_config[c] = {"title": c,
+                       "choices": {
+                          "Yes": 1,
+                          "No": 0
+                        },
                        }
         else:
-            f_config[c] = {"title": None,
-                       "slider_min": None,
-                       "slider_max": None
+            f_config[c] = {"title": c,
+                       "slider_min": minimums[i],
+                       "slider_max": maximums[i]
                        }
 
     with open('rest_server/data/features.txt', 'w') as outfile:
