@@ -25,3 +25,9 @@ def parse_get_models_request(request):
     check_for_Nones(json, arrays_to_check=['diseases'])
     diseases = json['diseases']
     return diseases
+
+def parse_relearn_models_request(request):
+    json = request.get_json()
+    check_for_Nones(json, arrays_to_check=['diseases'])
+    diseases = json['diseases']
+    return diseases
