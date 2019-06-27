@@ -13,8 +13,14 @@
   },
   "alcoholFrequency": {
     "title": "alcoholFrequency",
-    "slider_min": 1,
-    "slider_max": 6
+    "choices": {
+      "Daily or almost daily": 1,
+      "Three of four times a week": 2,
+      "Once or twice a week": 3,
+      "One to three times a month": 4,
+      "Special occasions only": 5,
+      "Never": 6
+    }
   },
   "asthma": {
     "title": "asthma",
@@ -54,13 +60,6 @@
     "slider_min": 137,
     "slider_max": 202
   },
-  "neverSmoked": {
-    "title": "neverSmoked",
-    "choices": {
-      "Yes": 1,
-      "No": 0
-    }
-  },
   "noOfCigarettesPerDay": {
     "title": "noOfCigarettesPerDay",
     "choices": {
@@ -97,7 +96,7 @@
   "systolicBloodPressure": {
     "title": "systolicBloodPressure",
     "slider_min": 79,
-    "slider_max": 244.5
+    "slider_max": 245
   },
   "tuberculosis": {
     "title": "tuberculosis",
@@ -109,7 +108,7 @@
   "weight": {
     "title": "weight",
     "slider_min": 39,
-    "slider_max": 188.1
+    "slider_max": 189
   },
   "wheezeInChestInLastYear": {
     "title": "wheezeInChestInLastYear",

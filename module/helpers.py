@@ -30,6 +30,7 @@ def dump_JSON(columns):
 
 def dump_config(df, imputer):
     import json
+    import math
 
     columns = df.columns.format()
     minimums = df.min()
@@ -45,8 +46,8 @@ def dump_config(df, imputer):
                        }
         else:
             f_config[c] = {"title": c,
-                       "slider_min": minimums[i],
-                       "slider_max": maximums[i]
+                       "slider_min": math.floor(minimums[i]),
+                       "slider_max": math.ceil(maximums[i])
                        }
 
     with open('rest_server/data/features.txt', 'w') as outfile:
@@ -109,7 +110,7 @@ def get_args():
                         help="name the correlating feature that you want to superimpose onto the matplot plots")
     parser.add_argument("-db", "--database", dest="db", default='ukbb',
                         help="mongo collection to learn from"),
-    parser.add_argument("-coll", "--collection", dest='collection', default='ahriMocked',
+    parser.add_argument("-coll", "--collection", dest='collection', default='ahriMocked2',
                         help="collection name from the database")
     return parser.parse_args()
 
