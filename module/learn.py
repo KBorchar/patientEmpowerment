@@ -21,6 +21,7 @@ def train_models(df, labels, correlator=None):
         model = linear_model.LogisticRegression(class_weight='balanced', solver='liblinear')
         models.append(model.fit(X_train, y_train))
 
+        ##### THIS IS INTERNAL TESTING AND CAN GO  SOON(TM) #####
         #skl = model.predict_proba(X_test.head(1))
         #own = helpers.own_predict(models[i].intercept_[0], models[i].coef_, X_test.head(1))
 
