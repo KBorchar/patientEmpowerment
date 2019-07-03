@@ -5,11 +5,11 @@
 ### python:
 from typing import List
 
-import helpers
-import learn
+from ml import helpers
+from ml import learn
 
 args = helpers.get_args()
-df = helpers.mongo2df(f'{args.dbname}')
+df = helpers.mongo2df(f'{args.db}', f'{args.collection}')
 
 if args.output:
     helpers.generate_profile_report(df, args.dbname)
@@ -21,4 +21,5 @@ imputer = learn.train_imputer(df)
 
 helpers.dump(models, labels)
 helpers.dump([imputer], ["imputer"])
-helpers.dumpJSON(df.columns.format())
+helpers.dump_JSON(df.columns.format())
+helpers.dump_config(df, imputer)

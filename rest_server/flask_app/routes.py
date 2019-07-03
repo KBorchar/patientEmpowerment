@@ -18,8 +18,9 @@ def predict():
     diseases, patient_data = request_parser.parse_predict_request(request)
     predictions = dict()
     for disease in diseases:
-        predictions[disease] = model_objects[disease].predict(patient_data)[0]
-        print(disease, predictions[disease])
+        data_for_disease = patient_data.copy()
+        data_for_disease.drop(columns=[disease], inplace=True)
+        predictions[disease] = model_objects[disease].predict(data_for_disease)[0]
     response = jsonify(predictions)
     return response
 
@@ -37,7 +38,7 @@ def get_models():
 @app.route('/retrain', methods=['GET'])
 def retrain_models():
     diseases = request_parser.parse_relearn_models_request(request)
-    df = helpers.mongo2df("ahriMocked") # TODO: try block, return error code if this fails i guess
+    df = helpers.mongo2df('ukbb', 'ahriMocked') # TODO: try block, return error code if this fails i guess
     model_objects, _ = learn.train_models(df, diseases, None)
     helpers.dump(model_objects, diseases)
     imputer = learn.train_imputer(df)
