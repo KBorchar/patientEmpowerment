@@ -4,9 +4,6 @@ from flask import request, jsonify
 
 from ml import models, model_objects, dataframe_column_labels, imputer, helpers, learn
 
-@app.route('/')
-def index():
-    return "Hello, World!"
 
 # requires JSON in request body, containing target disease and patient
 # {
@@ -20,8 +17,17 @@ def predict():
     for disease in diseases:
         data_for_disease = patient_data.copy()
         data_for_disease.drop(columns=[disease], inplace=True)
-        predictions[disease] = model_objects[disease].predict(data_for_disease)[0]
+        predictions[disease] = model_objects[disease].predict_proba(data_for_disease)[0, 1]
     response = jsonify(predictions)
+    return response
+
+# returns app config for the provided collection
+@app.route('/config', methods=['GET'])
+def get_config():
+    db, collection = request_parser.parse_get_config(request)
+    df = helpers.mongo2df(db, collection)
+    config = helpers.dump_config(df, imputer)
+    response = jsonify(config)
     return response
 
 # returns models currently in use
@@ -37,8 +43,8 @@ def get_models():
 # retrains models and returns new models.
 @app.route('/retrain', methods=['GET'])
 def retrain_models():
-    diseases = request_parser.parse_relearn_models_request(request)
-    df = helpers.mongo2df('ukbb', 'ahriMocked') # TODO: try block, return error code if this fails i guess
+    db, collection, diseases = request_parser.parse_relearn_models_request(request)
+    df = helpers.mongo2df(db, collection) # TODO: try catch block, return error code if this fails i guess
     model_objects, _ = learn.train_models(df, diseases, None)
     helpers.dump(model_objects, diseases)
     imputer = learn.train_imputer(df)

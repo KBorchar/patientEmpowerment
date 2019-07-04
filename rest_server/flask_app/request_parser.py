@@ -13,6 +13,9 @@ def check_for_Nones(json, dicts_to_check=[], arrays_to_check=[]):
         if None in json[field]:
             abort(417, description='No null values in JSON fields allowed.')
 
+def get_db_and_collection_name(json):
+    return json['db'], json['collection']
+
 def parse_predict_request(request):
     json = request.get_json()
     check_for_Nones(json, dicts_to_check=['patient_data'], arrays_to_check=['diseases'])
@@ -29,5 +32,12 @@ def parse_get_models_request(request):
 def parse_relearn_models_request(request):
     json = request.get_json()
     check_for_Nones(json, arrays_to_check=['diseases'])
+    db, collection = get_db_and_collection_name(json)
     diseases = json['diseases']
-    return diseases
+    return db, collection, diseases
+
+def parse_get_config(request):
+    json = request.get_json()
+    check_for_Nones(json)
+    db, collection = get_db_and_collection_name(json)
+    return db, collection

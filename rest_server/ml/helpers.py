@@ -52,7 +52,7 @@ def dump_config(df, imputer):
 
     with open('data/features.txt', 'w') as outfile:
         json.dump(f_config, outfile)
-
+    return f_config
 
 def plot_classification_reports(reports, titles=[]):
     from matplotlib import colors
