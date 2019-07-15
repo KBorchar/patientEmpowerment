@@ -12,12 +12,12 @@ from ml import models, model_objects, dataframe_column_labels, imputer, helpers,
 # }
 @app.route('/predict', methods=['GET'])
 def predict():
-    diseases, patient_data = request_parser.parse_predict_request(request)
+    labels, user_data = request_parser.parse_predict_request(request)
     predictions = dict()
-    for disease in diseases:
-        data_for_disease = patient_data.copy()
-        data_for_disease.drop(columns=[disease], inplace=True)
-        predictions[disease] = model_objects[disease].predict_proba(data_for_disease)[0, 1]
+    for label in labels:
+        data_for_label = user_data.copy()
+        data_for_label.drop(columns=[label], inplace=True)
+        predictions[label] = model_objects[label].predict_proba(data_for_label)[0, 1]
     response = jsonify(predictions)
     return response
 
@@ -33,20 +33,20 @@ def get_config():
 # returns models currently in use
 @app.route('/models', methods=['GET'])
 def get_models():
-    diseases = request_parser.parse_get_models_request(request)
+    labels = request_parser.parse_get_models_request(request)
     models_dict = dict()
-    for disease in diseases:
-        models_dict[disease] = models.get_model_dict(disease)
+    for label in labels:
+        models_dict[label] = models.get_model_dict(label)
     response = jsonify(models_dict)
     return response
 
 # retrains models and returns new models.
 @app.route('/retrain', methods=['GET'])
 def retrain_models():
-    db, collection, diseases = request_parser.parse_relearn_models_request(request)
+    db, collection, labels = request_parser.parse_relearn_models_request(request)
     df = helpers.mongo2df(db, collection) # TODO: try catch block, return error code if this fails i guess
-    model_objects, _ = learn.train_models(df, diseases, None)
-    helpers.dump(model_objects, diseases)
+    model_objects, _ = learn.train_models(df, labels, None)
+    helpers.dump(model_objects, labels)
     imputer = learn.train_imputer(df)
     helpers.dump([imputer], ["imputer"])
     return get_models()
