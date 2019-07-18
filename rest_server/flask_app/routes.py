@@ -10,7 +10,7 @@ from ml import models, model_objects, dataframe_column_labels, imputer, helpers,
 #   diseases: ['...', '...']
 #   patient_data: {...}
 # }
-@app.route('/predict', methods=['GET'])
+@app.route('/predict', methods=['POST'])
 def predict():
     labels, user_data = request_parser.parse_predict_request(request)
     predictions = dict()
@@ -22,7 +22,7 @@ def predict():
     return response
 
 # returns app config for the provided collection
-@app.route('/config', methods=['GET'])
+@app.route('/config', methods=['POST'])
 def get_config():
     db, collection = request_parser.parse_get_config(request)
     df = helpers.mongo2df(db, collection)
@@ -31,7 +31,7 @@ def get_config():
     return response
 
 # returns models currently in use
-@app.route('/models', methods=['GET'])
+@app.route('/models', methods=['POST'])
 def get_models():
     labels = request_parser.parse_get_models_request(request)
     models_dict = dict()
@@ -41,7 +41,7 @@ def get_models():
     return response
 
 # retrains models and returns new models.
-@app.route('/retrain', methods=['GET'])
+@app.route('/retrain', methods=['POST'])
 def retrain_models():
     db, collection, labels = request_parser.parse_relearn_models_request(request)
     df = helpers.mongo2df(db, collection) # TODO: try catch block, return error code if this fails i guess
