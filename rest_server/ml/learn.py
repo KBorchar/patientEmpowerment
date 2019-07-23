@@ -59,12 +59,15 @@ def train_models(df, labels, correlator=None):
     plt.savefig(f'/tmp/{models[i].__class__.__name__}{io.uuid()}.png')
     return models, classification_reports
 
-# Experimental.
+# Experimental. Currently only used for keeping track of the means of each column.
 # Imputes missing values by iteratively going through all columns and predicting on them. Unfortunately, broken when
-# the dataframe is already void of NaNs. Now used for keeping track of the means of each column.
+# the data frame is already void of NaNs, see https://github.com/scikit-learn/scikit-learn/issues/13773
+#
+# Even though not used properly now, this could have big implication on database compatibilities, as it would allow
+# predictions on incomplete data sets.
 def train_imputer(df):
     from sklearn import linear_model
-    from sklearn.impute import IterativeImputer
+    from sklearn.impute import IterativeImputer # if your IDE can't find, don't worry. Symptom of it being experimental.
 
     imputer = IterativeImputer(verbose=0,
                                estimator=linear_model.LogisticRegression(class_weight="balanced"),
