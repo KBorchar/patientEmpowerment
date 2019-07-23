@@ -5,8 +5,8 @@
 ### python:
 from typing import List
 
-import helpers
-import learn
+from ml import helpers
+from ml import learn
 
 args = helpers.get_args()
 df = helpers.mongo2df(args.db, args.collection)

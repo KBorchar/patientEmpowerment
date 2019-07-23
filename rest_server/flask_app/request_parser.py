@@ -13,21 +13,31 @@ def check_for_Nones(json, dicts_to_check=[], arrays_to_check=[]):
         if None in json[field]:
             abort(417, description='No null values in JSON fields allowed.')
 
+def get_db_and_collection_name(json):
+    return json['db'], json['collection']
+
 def parse_predict_request(request):
     json = request.get_json()
-    check_for_Nones(json, dicts_to_check=['patient_data'], arrays_to_check=['diseases'])
-    diseases = json['diseases']
-    patient_data = DataFrame.from_records([json['patient_data']])
-    return diseases, patient_data
+    check_for_Nones(json, dicts_to_check=['user_data'], arrays_to_check=['labels'])
+    labels = json['labels']
+    user_data = DataFrame.from_records([json['user_data']])
+    return labels, user_data
 
 def parse_get_models_request(request):
     json = request.get_json()
-    check_for_Nones(json, arrays_to_check=['diseases'])
-    diseases = json['diseases']
-    return diseases
+    check_for_Nones(json, arrays_to_check=['labels'])
+    labels = json['labels']
+    return labels
 
 def parse_relearn_models_request(request):
     json = request.get_json()
-    check_for_Nones(json, arrays_to_check=['diseases'])
-    diseases = json['diseases']
-    return diseases
+    check_for_Nones(json, arrays_to_check=['labels'])
+    db, collection = get_db_and_collection_name(json)
+    labels = json['labels']
+    return db, collection, labels
+
+def parse_get_config(request):
+    json = request.get_json()
+    check_for_Nones(json)
+    db, collection = get_db_and_collection_name(json)
+    return db, collection
