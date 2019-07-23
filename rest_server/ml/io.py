@@ -15,11 +15,11 @@ def get_args():
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
-    parser.add_argument("-o", "--output", action='store_true')
+    parser.add_argument("-o", "--output", action='store_true', help="Draw a confusion matrix for various scores.")
     parser.add_argument("-l", "--labels", dest="labels", default='COPD asthma diabetes tuberculosis',
-                        help="provide labels to predict on, separated by spaces, e.g.: \"COPD asthma diabetes\"")
+                        help="Labels to predict on, separated by spaces, e.g.: \"COPD asthma diabetes\".")
     parser.add_argument("-c", "--correlator", dest="correlator",
-                        help="name the correlating feature that you want to superimpose onto the matplot plots")
+                        help="The correlating feature that you want to superimpose onto the visual plots.")
     parser.add_argument("-db", "--database", dest="db", default='ukbb',
                         help="mongo collection to learn from"),
     parser.add_argument("-coll", "--collection", dest='collection', default='ahriMocked2',
