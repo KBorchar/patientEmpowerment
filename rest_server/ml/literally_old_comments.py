@@ -1,17 +1,3 @@
-
-#predictions = c.predict(X_test)
-#difference = predictions - y_test
-#difference.sort_values(inplace=True)
-#pca = PCA()
-#pca.fit(X_train)
-#transformed = pca.transform(X_train)
-#plt.figure()
-#plt.plot(range(0, 5000), difference[:5000])
-#plt.plot(range(0, 100), predictions[100], label="predictions")
-#plt.savefig('/tmp/rbf2.png')
-
-
-
 '''
 def own_predict(intercept, coef, X):
     import numpy as np

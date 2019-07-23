@@ -46,7 +46,7 @@ def retrain_models():
     db, collection, labels = request_parser.parse_relearn_models_request(request)
     df = io.mongo2df(db, collection) # TODO: try catch block, return error code if this fails i guess
     model_objects, _ = learn.train_models(df, labels, None)
-    io.dump(model_objects, labels)
+    io.dump_models(model_objects, labels)
     imputer = learn.train_imputer(df)
-    io.dump([imputer], ["imputer"])
+    io.dump_models([imputer], ["imputer"])
     return get_models()

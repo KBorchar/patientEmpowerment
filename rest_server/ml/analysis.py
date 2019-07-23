@@ -1,5 +1,6 @@
 from ml import io
 
+#Visualizes the classification report that sklearn provides. use -o in command line to call this.
 def plot_classification_reports(reports, titles=[]):
     from matplotlib import colors
     import matplotlib.pyplot as plt
