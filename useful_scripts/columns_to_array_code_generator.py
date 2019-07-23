@@ -1,3 +1,12 @@
+#
+#Script to change column format for fields that had own columns but belonged to another:
+#E.G., diastolicBloodPressure had three columns with different measurements. This converts them to one column:
+#Before:
+#   | diastolicBloodPressure1 | diastolicBloodPressure2 | diastolicBloodPressure3 |
+#   | 100					  | 105					    | 102					  |
+#After:
+# 	| diastolicBloodPressure |
+#   [100,105,102]
 databaseName = 'ahriWithGeoArray'
 newDatabaseName = 'ahriWithGeoArray'
 newName = 'diastolicBloodPressure'
