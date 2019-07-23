@@ -36,7 +36,7 @@ def parse_relearn_models_request(request):
     labels = json['labels']
     return db, collection, labels
 
-def parse_get_config(request):
+def parse_get_feature_config(request):
     json = request.get_json()
     check_for_Nones(json)
     db, collection = get_db_and_collection_name(json)
