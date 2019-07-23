@@ -1,3 +1,4 @@
+# take a mongo collection and turn it into a dataframe.
 def mongo2df(db, coll, limit=0):
     import pymongo
     import pandas as pd
@@ -10,7 +11,7 @@ def mongo2df(db, coll, limit=0):
         df.drop(inplace=True, columns=["_id"])
     return df
 
-
+# argument parsing for the command line
 def get_args():
     from argparse import ArgumentParser
 
@@ -26,33 +27,31 @@ def get_args():
                         help="collection name from the database")
     return parser.parse_args()
 
-
+# Generate uuid in format that can be used in file-names
 def short_uuid():
     import uuid
     return uuid.uuid4().hex
 
-
-def dump(things, names):
+# The sklearn-way to write models to a file
+def dump_models(models, labels):
     from joblib import dump
-    for i, t in enumerate(things):
-        dump(t, f'data/models/{names[i]}.joblib')
+    for i, t in enumerate(models):
+        dump(t, f'data/models/{labels[i]}.joblib')
 
-
-def dump_JSON(columns):
-    import json
-    with open('data/columns.txt', 'w') as outfile:
-        json.dump(columns, outfile)
-
-
+# Generate a config file for the frontend.
 def dump_config(df, imputer):
     import json
     import math
 
     columns = df.columns.format()
+
+    # Min and max will inform number ranges for sliders in the frontend
     minimums = df.min()
     maximums = df.max()
     f_config = {}
     for i, c in enumerate(columns):
+
+        # if the mean of a columns is smaller than 1, it's likely to be a binary choice between 1 and 0.
         if imputer.initial_imputer_.statistics_[i] <= 1:
             f_config[c] = {"title": c,
                        "choices": {
@@ -60,6 +59,7 @@ def dump_config(df, imputer):
                           "No": 0
                         },
                        }
+        # else it is a range choice, which will create a slider
         else:
             f_config[c] = {"title": c,
                        "slider_min": math.floor(minimums[i]),
