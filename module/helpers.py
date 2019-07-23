@@ -3,7 +3,7 @@ def mongo2df(db, coll, limit=0):
     import pandas as pd
 
     client = pymongo.MongoClient('localhost', 27017)  # connects to mongodb server
-    db = client[f'{db}']  # select database on server ('use ukbb' in shell)
+    db = client[db]  # select database on server ('use ukbb' in shell)
     collection = db[coll]
     df = pd.DataFrame(list(collection.find().limit(limit)))
     if '_id' in df.columns:

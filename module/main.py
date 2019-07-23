@@ -9,7 +9,7 @@ import helpers
 import learn
 
 args = helpers.get_args()
-df = helpers.mongo2df(f'{args.db}', f'{args.collection}')
+df = helpers.mongo2df(args.db, args.collection)
 
 if args.output:
     helpers.generate_profile_report(df, args.dbname)
