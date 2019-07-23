@@ -22,9 +22,9 @@ def predict():
     return response
 
 # returns app config for the provided collection
-@app.route('/config', methods=['POST'])
-def get_config():
-    db, collection = request_parser.parse_get_config(request)
+@app.route('/feature-config', methods=['POST'])
+def get_feature_config():
+    db, collection = request_parser.parse_get_feature_config(request)
     df = io.mongo2df(db, collection)
     config = io.dump_config(df, imputer)
     response = jsonify(config)
