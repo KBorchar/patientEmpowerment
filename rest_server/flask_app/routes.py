@@ -2,7 +2,7 @@ from flask_app import app, request_parser
 
 from flask import request, jsonify
 
-from ml import models, model_objects, dataframe_column_labels, imputer, helpers, learn
+from ml import models, model_objects, dataframe_column_labels, imputer, io, learn
 
 
 # requires JSON in request body, containing target disease and patient
@@ -25,8 +25,8 @@ def predict():
 @app.route('/config', methods=['POST'])
 def get_config():
     db, collection = request_parser.parse_get_config(request)
-    df = helpers.mongo2df(db, collection)
-    config = helpers.dump_config(df, imputer)
+    df = io.mongo2df(db, collection)
+    config = io.dump_config(df, imputer)
     response = jsonify(config)
     return response
 
@@ -44,9 +44,9 @@ def get_models():
 @app.route('/retrain', methods=['POST'])
 def retrain_models():
     db, collection, labels = request_parser.parse_relearn_models_request(request)
-    df = helpers.mongo2df(db, collection) # TODO: try catch block, return error code if this fails i guess
+    df = io.mongo2df(db, collection) # TODO: try catch block, return error code if this fails i guess
     model_objects, _ = learn.train_models(df, labels, None)
-    helpers.dump(model_objects, labels)
+    io.dump(model_objects, labels)
     imputer = learn.train_imputer(df)
-    helpers.dump([imputer], ["imputer"])
+    io.dump([imputer], ["imputer"])
     return get_models()

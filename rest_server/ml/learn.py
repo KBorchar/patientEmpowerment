@@ -3,7 +3,7 @@ def train_models(df, labels, correlator=None):
     from sklearn.model_selection import train_test_split
     import matplotlib.pyplot as plt
     import numpy as np
-    from ml import helpers
+    from ml import io, analysis
     from sklearn.metrics import classification_report
 
     plt.figure()
@@ -20,10 +20,6 @@ def train_models(df, labels, correlator=None):
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=7)
         model = linear_model.LogisticRegression(class_weight='balanced', solver='liblinear')
         models.append(model.fit(X_train, y_train))
-
-        ##### THIS IS INTERNAL TESTING AND CAN GO  SOON(TM) #####
-        #skl = model.predict_proba(X_test.head(1))
-        #own = helpers.own_predict(models[i].intercept_[0], models[i].coef_, X_test.head(1))
 
         #Drawing
         probabilities = model.predict_proba(X_test)
@@ -52,16 +48,14 @@ def train_models(df, labels, correlator=None):
         y_pred = model.predict(X_test)
         classification_reports.append(classification_report(y_test, y_pred, target_names=['no', 'yes']))
 
-        #print(f'{l}score: {model.score(X_test, y_test)}')
 
     plt.legend(loc='upper left')
-    plt.savefig(f'/tmp/{models[i].__class__.__name__}{helpers.uuid()}.png')
+    plt.savefig(f'/tmp/{models[i].__class__.__name__}{io.uuid()}.png')
     return models, classification_reports
 
 
 def train_imputer(df):
     from sklearn import linear_model
-    from sklearn.experimental import enable_iterative_imputer
     from sklearn.impute import IterativeImputer
 
     imputer = IterativeImputer(verbose=0,
