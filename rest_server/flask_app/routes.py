@@ -1,15 +1,12 @@
 from flask_app import app, request_parser
 
 from flask import request, jsonify
+import flask.abort
 
 from ml import models, model_objects, dataframe_column_labels, imputer, io, learn
 
-
-# requires JSON in request body, containing target disease and patient
-# {
-#   diseases: ['...', '...']
-#   patient_data: {...}
-# }
+# predicts probabilities for given labels and user data
+# requires JSON in request body, containing an array of labels and a dictionary of user_data
 @app.route('/predict', methods=['POST'])
 def predict():
     labels, user_data = request_parser.parse_predict_request(request)
@@ -22,6 +19,7 @@ def predict():
     return response
 
 # returns app config for the provided collection
+# requires JSON in request body, containing a 'db' and a 'collection' field
 @app.route('/feature-config', methods=['POST'])
 def get_feature_config():
     db, collection = request_parser.parse_get_feature_config(request)
@@ -30,7 +28,8 @@ def get_feature_config():
     response = jsonify(config)
     return response
 
-# returns models currently in use
+# returns coefficients and means for pre-trained models on the server
+# requires JSON in request body, containing an array of labels one wants the models for
 @app.route('/models', methods=['POST'])
 def get_models():
     labels = request_parser.parse_get_models_request(request)
@@ -40,13 +39,18 @@ def get_models():
     response = jsonify(models_dict)
     return response
 
-# retrains models and returns new models.
+# retrains models and returns coefficients and means of the new models
+# requires JSON in request body, containing a 'db' and a 'collection' field, as well as an array of labels
+# one wants new models for
 @app.route('/retrain', methods=['POST'])
 def retrain_models():
     db, collection, labels = request_parser.parse_relearn_models_request(request)
-    df = io.mongo2df(db, collection) # TODO: try catch block, return error code if this fails i guess
+    try:
+        df = io.mongo2df(db, collection)
+    except:
+        flask.abort(503, description='Something went wrong with loading data from the mongoDB. Make sure it is running!')
     model_objects, _ = learn.train_models(df, labels, None)
     io.dump_models(model_objects, labels)
     imputer = learn.train_imputer(df)
-    io.dump_models([imputer], ["imputer"])
+    io.dump_objects([imputer], ["imputer"])
     return get_models()

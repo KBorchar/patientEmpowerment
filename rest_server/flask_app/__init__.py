@@ -1,4 +1,4 @@
-# initializes flask_app module
+# initializes flask_app package
 from flask import Flask
 
 app = Flask(__name__)

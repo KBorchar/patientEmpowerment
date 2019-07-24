@@ -32,11 +32,16 @@ def short_uuid():
     import uuid
     return uuid.uuid4().hex
 
-# The sklearn-way to write models to a file
+# Writes models with their labels into 'data/models'
 def dump_models(models, labels):
+    return dump_objects(models, labels, 'models/')
+
+# The sklearn-way to write objects to a file
+# All files get placed in the 'data' directory
+def dump_objects(objects, names, path=''):
     from joblib import dump
-    for i, t in enumerate(models):
-        dump(t, f'data/models/{labels[i]}.joblib')
+    for name, object in zip(names, objects):
+        dump(object, f'data/{path}/{name}.joblib')
 
 # Generate a config file for the frontend.
 def dump_config(df, imputer):
@@ -69,9 +74,3 @@ def dump_config(df, imputer):
     with open('data/features.conf', 'w') as outfile:
         json.dump(f_config, outfile)
     return f_config
-
-
-
-
-
-

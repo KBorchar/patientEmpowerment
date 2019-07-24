@@ -16,5 +16,5 @@ analysis.plot_classification_reports(classification_reports, labels)
 imputer = learn.train_imputer(df)
 
 io.dump_models(models, labels)
-io.dump_models([imputer], ["imputer"])
+io.dump_objects([imputer], ["imputer"])
 io.dump_config(df, imputer)
