@@ -23,7 +23,7 @@ def get_args():
                         help="The correlating feature that you want to superimpose onto the visual plots.")
     parser.add_argument("-db", "--database", dest="db", default='ukbb',
                         help="mongo collection to learn from"),
-    parser.add_argument("-coll", "--collection", dest='collection', default='ahriMocked2',
+    parser.add_argument("-coll", "--collection", dest='collection', default='ahriCleaner2',
                         help="collection name from the database")
     return parser.parse_args()
 
