@@ -56,7 +56,7 @@ def train_models(df, labels, correlator=None):
 
 
     plt.legend(loc='upper left')
-    plt.savefig(f'/tmp/{models[i].__class__.__name__}{io.uuid()}.png')
+    plt.savefig(f'/tmp/{models[i].__class__.__name__}{io.short_uuid()}.png')
     return models, classification_reports
 
 # Experimental. Currently only used for keeping track of the means of each column.
@@ -67,6 +67,7 @@ def train_models(df, labels, correlator=None):
 # predictions on incomplete data sets.
 def train_imputer(df):
     from sklearn import linear_model
+    from sklearn.experimental import enable_iterative_imputer # NB: keep this import, else the Imputer won't work on the used sklearn version
     from sklearn.impute import IterativeImputer # if your IDE complains: Symptom of it being experimental. Still works.
 
     imputer = IterativeImputer(verbose=0,
