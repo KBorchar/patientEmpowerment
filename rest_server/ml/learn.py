@@ -16,14 +16,14 @@ def train_models(df, labels, correlator=None):
 
     for i, l in enumerate(labels):
 
-        # Train each model, then add it to list of models
+        # Train each model, then add it to list of models. liblinear+balanced had best scores for UKBB data.
         y = df[l]
         X = df.drop(columns=[l])
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=7)
         model = linear_model.LogisticRegression(class_weight='balanced', solver='liblinear')
         models.append(model.fit(X_train, y_train))
 
-# ############# DRAWING ########### #
+        # Drawing
         # Probabilities for all entries in test set
         probabilities = model.predict_proba(X_test)
 
@@ -61,13 +61,13 @@ def train_models(df, labels, correlator=None):
 
 # Experimental. Currently only used for keeping track of the means of each column.
 # Imputes missing values by iteratively going through all columns and predicting on them. Unfortunately, broken when
-# the data frame is already void of NaNs, see https://github.com/scikit-learn/scikit-learn/issues/13773
+# the data frame has no NaNs, see https://github.com/scikit-learn/scikit-learn/issues/13773
 #
-# Even though not used properly now, this could have big implication on database compatibilities, as it would allow
+# Even though not used to potential now, this could have big implications on database compatibilities, as it would allow
 # predictions on incomplete data sets.
 def train_imputer(df):
     from sklearn import linear_model
-    from sklearn.impute import IterativeImputer # if your IDE can't find, don't worry. Symptom of it being experimental.
+    from sklearn.impute import IterativeImputer # if your IDE complains: Symptom of it being experimental. Still works.
 
     imputer = IterativeImputer(verbose=0,
                                estimator=linear_model.LogisticRegression(class_weight="balanced"),

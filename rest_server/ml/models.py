@@ -1,9 +1,10 @@
 from ml import model_objects, imputer, dataframe_column_labels
 
-def get_model_dict(disease):
-    model = model_objects[disease]
+# converts
+def get_model_dict(label):
+    model = model_objects[label]
     feature_names = dataframe_column_labels.copy()
-    label_index = feature_names.index(disease)
+    label_index = feature_names.index(label)
     del(feature_names[label_index])
     feature_means = imputer.initial_imputer_.statistics_.copy().tolist()
     del(feature_means[label_index])

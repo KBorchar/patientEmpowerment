@@ -51,7 +51,7 @@ def dump_config(df, imputer):
     f_config = {}
     for i, c in enumerate(columns):
 
-        # if the mean of a columns is smaller than 1, it's likely to be a binary choice between 1 and 0.
+        # if the mean of a columns is smaller than 1, it's likely to be a binary choice between 1 and 0(e.g., asthma)...
         if imputer.initial_imputer_.statistics_[i] <= 1:
             f_config[c] = {"title": c,
                        "choices": {
@@ -59,7 +59,7 @@ def dump_config(df, imputer):
                           "No": 0
                         },
                        }
-        # else it is a range choice, which will create a slider
+        # ...else it is a range choice (e.g., age), which will create a slider
         else:
             f_config[c] = {"title": c,
                        "slider_min": math.floor(minimums[i]),
