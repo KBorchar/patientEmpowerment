@@ -1,9 +1,8 @@
 from flask_app import app, request_parser
 
-from flask import request, jsonify
-import flask.abort
+from flask import request, jsonify, abort
 
-from ml import models, model_objects, dataframe_column_labels, imputer, io, learn
+from ml import model_objects, dataframe_column_labels, imputer, io, learn
 
 # predicts probabilities for given labels and user data
 # requires JSON in request body, containing an array of labels and a dictionary of user_data
@@ -35,7 +34,7 @@ def get_models():
     labels = request_parser.parse_get_models_request(request)
     models_dict = dict()
     for label in labels:
-        models_dict[label] = models.get_model_dict(label)
+        models_dict[label] = io.get_model_dict(label)
     response = jsonify(models_dict)
     return response
 
@@ -48,7 +47,7 @@ def retrain_models():
     try:
         df = io.mongo2df(db, collection)
     except:
-        flask.abort(503, description='Something went wrong with loading data from the mongoDB. Make sure it is running!')
+        abort(503, description='Something went wrong with loading data from the mongoDB. Make sure it is running!')
     model_objects, _ = learn.train_models(df, labels, None)
     io.dump_models(model_objects, labels)
     imputer = learn.train_imputer(df)
