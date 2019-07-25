@@ -40,9 +40,11 @@ For example, if you wanted visualize not only pet-distribution, but also get an 
  you could call `-c house-size-in-sqm`.
 
 ### Flask-Server
-`python3 empower_server.py`
-
 Runs a flask server offering a REST-API for the Empower application. All requests expect a JSON document.
+
+Start the server by calling
+
+    python3 empower_server.py
 
 The API currently provides 4 endpoints:
 
@@ -50,6 +52,7 @@ The API currently provides 4 endpoints:
 
 Allows for server-side prediction of different labels. Currently, Logistic Regression is used as a predictor.
 All fields used by the model during training need to be in the request body.
+
 The request body should be formatted like this:
     
     {
@@ -77,6 +80,7 @@ The server's response will look like this:
 
 Asks the server for its precomputed models to allow for on-device predictions. Currently, we use logistical regression,
 for which only 
+
 The request body should be formatted like this:
 
     {
@@ -113,6 +117,7 @@ The server's response will look like this:
 
 Asks the server to retrain its models on a given database and collection and for a given set of labels contained in the
 collection.
+
 The request body should be formatted like this:
 
     {
