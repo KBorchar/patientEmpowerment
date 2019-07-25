@@ -2,19 +2,27 @@
 
 This is the server-side part of the Empower platform.
 
-## Installation
-
-You can install it by having it.
-
 ## Requirements
 
-* A clean MongoDB collection (No empty fields or documents)
-* python 3
-* pip3 for dependencies :)
+* Python3
+* Pip3 to install dependencies
+* A MongoDB server with a clean collection (No empty fields or documents)
+
+## Installation
+If running this on a non-dedicated system, consider using a `venv` for installation and usage of this project.
+
+    sudo apt install python3 pip3
+    pip3 install scikit-learn=0.21.2 flask=1.0.3 pymongo=3.8.0 pandas=0.24.2 joblib=0.13.2 matplotlib=3.1.0 pandas_profiling=1.4.2 numpy=1.16.4 odo=0.5.0 
+    git clone git@github.com:patientempowerment/patientEmpowerment.git
 
 ## Usage
 
-Functionalities can be accessed in two ways: 1. from the command-line, 2. through web-requests.
+The main functionalities are placed in the `rest_server` directory:
+* `empower_cli.py`, giving access to the functions through the command-line, and
+* `empower_server.py`, providing a REST-API for access through the web.
+
+In the `useful_scripts` directory you can find some data cleaning utilities used in the project.
+
 
 ### CLI
 `python3 empower_cli.py --help`
