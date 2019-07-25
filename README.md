@@ -1,4 +1,4 @@
-#EMPOWER
+# EMPOWER
 
 This is the server-side part of the Empower platform.
 
