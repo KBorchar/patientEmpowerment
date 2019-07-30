@@ -11,9 +11,13 @@ def check_for_Nones(json, dicts_to_check=[], lists_to_check=[]):
     for field in dicts_to_check:
         if None in json[field].values():
             abort(417, description='No null values in JSON fields allowed.')
+        if not json[field]:
+            abort(417, description='No empty dictionaries in JSON fields allowed.')
     for field in lists_to_check:
         if None in json[field]:
             abort(417, description='No null values in JSON fields allowed.')
+        if not json[field]:
+            abort(417, description='No empty lists in JSON fields allowed.')
 
 def get_db_and_collection_name(json):
     return json['db'], json['collection']
@@ -34,7 +38,7 @@ def parse_get_models_request(request):
     return labels
 
 # receives the database name, collection name and list of labels for which the models are supposed to be retrained
-def parse_relearn_models_request(request):
+def parse_retrain_models_request(request):
     json = request.get_json()
     check_for_Nones(json, lists_to_check=['labels'])
     db, collection = get_db_and_collection_name(json)

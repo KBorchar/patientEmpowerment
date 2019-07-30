@@ -11,6 +11,20 @@ def mongo2df(db, coll, limit=0):
         df.drop(inplace=True, columns=["_id"])
     return df
 
+def load_models_from_disk():
+    import glob
+    from joblib import load
+    from ml import model_objects, model_names
+
+    model_file_names = glob.glob("data/models/*.joblib")
+    model_names = []
+    for file_name in model_file_names:
+        name = file_name.split('/')[-1].split('.')[0]
+        model_names.append(name)
+
+    model_objects = {}
+    for name in model_names:
+        model_objects[name] = load('data/models/' + name + '.joblib')
 
 # generates dictionary of feature-coefficients and -means for a model
 def get_model_dict(label):
