@@ -37,7 +37,7 @@ In short:
 For example, if you want to predict if people have *dogs*, *cats*, and/or *birds*. You have a mongoDB
 called **Citizens12**, which has a collection called **livingSituation**. You would call:
 
-`python3 empower_cli.py -db Citizens12 -coll livingSituation -l "has_cat has_dog has_bird"`
+`python3 empower_cli.py -db Citizens12 -c livingSituation -l "has_cat has_dog has_bird"`
 
 Optionals are `--output` and `--correlator`.
 
@@ -45,7 +45,7 @@ Optionals are `--output` and `--correlator`.
 
 --correlator superimposes the values of a column onto the graphs that are generated at each execution. 
 For example, if you wanted visualize not only pet-distribution, but also get an idea for correlating house-size
- you could call `-c house-size-in-sqm`.
+ you could call `-corr house-size-in-sqm`.
 
 ### Flask-Server
 Runs a flask server offering a REST-API for the Empower application. All requests expect a JSON document.
@@ -170,12 +170,14 @@ The response will look as follows, with `<featureX>` being the name of the featu
                 "No": 0,
                 "Yes": 1
             },
-            "title": <feature1_title>
+            "title": <feature1_title>,
+            "mean": <float>
         },
         <feature2>: {
             "slider_max": <value>,
             "slider_min": <value>,
-            "title": <feature2_title>
+            "title": <feature2_title>,
+            "mean": <float>
         },
         ...
     }
