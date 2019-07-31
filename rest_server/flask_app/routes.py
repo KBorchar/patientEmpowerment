@@ -32,6 +32,7 @@ def get_feature_config():
 @app.route('/models', methods=['POST'])
 def get_models():
     labels = request_parser.parse_get_models_request(request)
+    io.load_models_from_disk()
     models_dict = dict()
     for label in labels:
         models_dict[label] = io.get_model_dict(label)
@@ -43,7 +44,7 @@ def get_models():
 # one wants new models for
 @app.route('/retrain', methods=['POST'])
 def retrain_models():
-    db, collection, labels = request_parser.parse_relearn_models_request(request)
+    db, collection, labels = request_parser.parse_retrain_models_request(request)
     try:
         df = io.mongo2df(db, collection)
     except:
