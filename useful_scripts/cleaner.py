@@ -54,6 +54,7 @@ df.loc[df['smokingStatus'] == 2, ['neverSmoked']] = 0
 df.loc[df['smokingStatus'] == 2, ['previouslySmoked']] = 0
 df.loc[df['smokingStatus'] == 2, ['currentlySmoking']] = 1
 
+# Smoking == 2 is 'only occasionally', which we basically decided means one per day.
 df.loc[df['smoking'] == 2, ['noOfCigarettesPerDay']] = 1
 df.loc[df['smoking'] == 2, ['neverSmoked']] = 0
 df.loc[df['smoking'] == 2, ['previouslySmoked']] = 0
