@@ -11,6 +11,44 @@ def mongo2df(db, coll, limit=0):
         df.drop(inplace=True, columns=["_id"])
     return df
 
+def models(db_name, subset_name):
+    import os
+    from joblib import load
+
+    models_path = 'data/databases/' + db_name + '/subsets/' + subset_name + '/models/'
+    models = {}
+    directory = os.fsencode(models_path)
+
+    try:
+        for file in os.listdir(directory):
+            filename = os.fsdecode(file)
+            if filename.endswith(".joblib"):
+                models[filename.split('.')[0]] = load(models_path + filename)
+    except:
+        pass
+    return models
+
+def feature_config(db_name, subset_name):
+    import json
+
+    try:
+        file = open('data/databases/' + db_name + '/subsets/' + subset_name + '/features.conf')
+        json_string = file.read()
+        return json.loads(json_string)
+    except:
+        return {}
+
+def columns(db_name, subset_name):
+    df = mongo2df(db_name, subset_name, 1)
+    return df.columns.format()
+
+def databases():
+    import pymongo
+
+    client = pymongo.MongoClient('localhost', 27017)
+    return client.database_names()
+
+
 def load_models_from_disk():
     import glob
     from joblib import load

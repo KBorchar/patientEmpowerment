@@ -54,3 +54,33 @@ def retrain_models():
     imputer = learn.train_imputer(df)
     io.dump_objects([imputer], ["imputer"])
     return get_models()
+
+@app.route('/databases', methods=['GET'])
+def show_databases():
+    return jsonify(io.databases())
+
+@app.route('/database/<db_name>', methods=['GET'])
+def show_database(db_name):
+    abort(417, description='No empty lists in JSON fields allowed.')
+
+@app.route('/database/<db_name>/subsets', methods=['GET'])
+def show_subsets(db_name):
+
+    return
+
+@app.route('/database/<db_name>/subset/<subset_name>', methods=['GET'])
+def show_subset(db_name, subset_name):
+    import pandas as pd
+    columns = io.columns(db_name, subset_name)
+    models = io.models(db_name, subset_name)
+    feature_config = io.feature_config(db_name, subset_name)
+    response = {
+        "columns": columns,
+        "feature_config": feature_config,
+        "models": models
+    }
+    return jsonify(response)
+
+@app.route('/database/<db_name>/subset/<subset_name>/train', methods=['POST'])
+def train_subset(db_name, subset_name):
+    return
