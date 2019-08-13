@@ -59,27 +59,18 @@ def retrain_models():
 def show_databases():
     return jsonify(io.databases())
 
+# Redundant; same as show_subsets. Kept for robustness.
 @app.route('/database/<db_name>', methods=['GET'])
 def show_database(db_name):
-    abort(417, description='No empty lists in JSON fields allowed.')
+    return jsonify(io.database(db_name))
 
 @app.route('/database/<db_name>/subsets', methods=['GET'])
 def show_subsets(db_name):
-
-    return
+    return jsonify(io.subsets(db_name))
 
 @app.route('/database/<db_name>/subset/<subset_name>', methods=['GET'])
 def show_subset(db_name, subset_name):
-    import pandas as pd
-    columns = io.columns(db_name, subset_name)
-    models = io.models(db_name, subset_name)
-    feature_config = io.feature_config(db_name, subset_name)
-    response = {
-        "columns": columns,
-        "feature_config": feature_config,
-        "models": models
-    }
-    return jsonify(response)
+    return jsonify(io.subset(db_name, subset_name))
 
 @app.route('/database/<db_name>/subset/<subset_name>/train', methods=['POST'])
 def train_subset(db_name, subset_name):
@@ -88,13 +79,14 @@ def train_subset(db_name, subset_name):
     except:
         abort(503, description='Something went wrong with loading data from the mongoDB. Make sure it is running!')
 
+    io.ensure_dir_existence(db_name, subset_name)
     labels = df.columns.format()
     model_objects, _ = learn.train_models(df)
     io.dump_models_config(model_objects, labels, db_name, subset_name)
-    io.dump_models(model_objects, labels, db_name, subset_name) # TODO: give db and subset name
+    io.dump_models(model_objects, labels, db_name, subset_name)
 
     imputer = learn.train_imputer(df)
-    io.dump_objects([imputer], ["imputer"], 'database/' + db_name + '/subset/' + subset_name + '/objects/')
+    io.dump_objects([imputer], ["imputer"], io.path_name(db_name, subset_name) + 'objects/')
 
     io.dump_config(df, imputer, db_name, subset_name)
 

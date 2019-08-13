@@ -7,12 +7,20 @@ def train_models(df, labels=None, correlator=None):
     import numpy as np
     from ml import io, analysis
     from sklearn.metrics import classification_report
+    import pandas as pd
 
     plt.figure()
     ax1 = plt.subplot()
     ax2 = ax1.twinx()
     models = []
     classification_reports = []
+
+    if labels is None:
+        labels = df.columns.format()
+
+    for column in df.columns:
+        if df[column].dtype == float:
+            df = df.astype({column: 'int32'})
 
     for i, l in enumerate(labels):
 
@@ -52,8 +60,10 @@ def train_models(df, labels=None, correlator=None):
 
         # Will be relevant if -o is set form CLI.
         y_pred = model.predict(X_test)
-        classification_reports.append(classification_report(y_test, y_pred, target_names=['no', 'yes']))
-
+        try:
+            classification_reports.append(classification_report(y_test, y_pred, target_names=['no', 'yes']))
+        except:
+            pass
 
     plt.legend(loc='upper left')
     plt.savefig(f'/tmp/{models[i].__class__.__name__}{io.short_uuid()}.png')

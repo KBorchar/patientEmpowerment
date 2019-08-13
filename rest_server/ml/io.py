@@ -1,29 +1,49 @@
 # take a mongo collection and turn it into a dataframe.
-def mongo2df(db, coll, limit=0):
+def mongo2df(db_name, coll, limit=0):
     import pymongo
     import pandas as pd
 
     client = pymongo.MongoClient('localhost', 27017)
-    db = client[db]
-    collection = db[coll]
+    db_name = client[db_name]
+    collection = db_name[coll]
     df = pd.DataFrame(list(collection.find().limit(limit)))
     if '_id' in df.columns:
         df.drop(inplace=True, columns=["_id"])
     return df
 
-def models(db_name, subset_name):
-    import os
-    from joblib import load
+def columns(db_name, subset_name):
+    df = mongo2df(db_name, subset_name, 1)
+    return df.columns.format()
 
-    models_path = 'data/databases/' + db_name + '/subsets/' + subset_name + '/models/'
+def subsets(db_name):
+    import pymongo
+
+    client = pymongo.MongoClient('localhost', 27017)
+    db = client[db_name]
+    subset_names = db.list_collection_names()
+    subsets = {}
+    for s in subset_names:
+        subsets[s] = subset(db_name, s)
+    return subsets
+
+def subset(db_name, subset_name):
+    ensure_dir_existence(db_name, subset_name)
+    return {
+        "columns": columns(db_name, subset_name),
+        "features_config": feature_config(db_name, subset_name),
+        "models_config": models(db_name, subset_name)
+    }
+
+def models(db_name, subset_name):
+    import json
+
+    subset_path = path_name(db_name, subset_name)
     models = {}
-    directory = os.fsencode(models_path)
 
     try:
-        for file in os.listdir(directory):
-            filename = os.fsdecode(file)
-            if filename.endswith(".json"):
-                models[filename.split('.')[0]] = load(models_path + filename)
+        with open(subset_path + 'models_config.json') as infile:
+            json_string = infile.read()
+            models = json.loads(json_string)
     except:
         pass
     return models
@@ -32,22 +52,23 @@ def feature_config(db_name, subset_name):
     import json
 
     try:
-        file = open('data/databases/' + db_name + '/subsets/' + subset_name + '/features.conf')
+        file = open(path_name(db_name, subset_name) + 'features_config.json')
         json_string = file.read()
         return json.loads(json_string)
     except:
         return {}
 
-def columns(db_name, subset_name):
-    df = mongo2df(db_name, subset_name, 1)
-    return df.columns.format()
+def database(db_name):
+    return subsets(db_name)
 
 def databases():
     import pymongo
 
     client = pymongo.MongoClient('localhost', 27017)
-    return client.database_names()
-
+    dbs = {}
+    for db in client.database_names():
+        dbs[db] = database(db)
+    return dbs
 
 def load_models_from_disk():
     import glob
@@ -102,6 +123,17 @@ def get_args():
                         help="Collection name from the database")
     return parser.parse_args()
 
+def path_name(db_name, subset_name):
+    return 'data/databases/' + db_name + '/subsets/' + subset_name + '/'
+
+def ensure_dir_existence(db_name, subset_name):
+    import os
+
+    dirname = path_name(db_name, subset_name)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    if not os.path.exists(dirname + 'objects/'):
+        os.makedirs(dirname + 'objects/')
 
 # Generate uuid in format that can be used in file-names
 def short_uuid():
@@ -114,7 +146,7 @@ def dump_models_config(model_objects, columns, db_name, subset_name):
     models_config = {}
     for label, model in zip(columns, model_objects):
         feature_names = columns.copy()
-        del (feature_names[label])
+        feature_names.remove(label)
         weights = model.coef_
 
         model_config = {}
@@ -127,26 +159,26 @@ def dump_models_config(model_objects, columns, db_name, subset_name):
         model_config["features"] = features
         models_config[label] = model_config
 
-    with open('data/database/' + db_name + '/subsets/' + subset_name + '/models_config.json') as outfile:
+    dirname = path_name(db_name, subset_name)
+    with open(dirname + 'models_config.json', 'w') as outfile:
         json.dump(models_config, outfile)
 
     return models_config
 
 # Writes models with their labels into 'data/models'
-def dump_models(models, labels):
-    return dump_objects(models, labels, 'models/')
-
+def dump_models(models, labels, db_name, subset_name):
+    return dump_objects(models, labels, path_name(db_name, subset_name) + 'objects/')
 
 # The sklearn-way to write objects to a file
 # All files get placed in the 'data' directory
 def dump_objects(objects, names, path=''):
     from joblib import dump
     for name, object in zip(names, objects):
-        dump(object, f'data/{path}/{name}.joblib')
+        dump(object, f'{path}{name}.joblib')
 
 
 # Generate a config file for the frontend features.
-def dump_config(df, imputer):
+def dump_config(df, imputer, db_name, subset_name):
     import json
     import math
 
@@ -178,6 +210,6 @@ def dump_config(df, imputer):
                 "mean": mean
             }
 
-    with open('data/features.conf', 'w') as outfile:
+    with open(path_name(db_name, subset_name) + 'features_config.json', 'w') as outfile:
         json.dump(f_config, outfile)
     return f_config
