@@ -22,7 +22,7 @@ def models(db_name, subset_name):
     try:
         for file in os.listdir(directory):
             filename = os.fsdecode(file)
-            if filename.endswith(".joblib"):
+            if filename.endswith(".json"):
                 models[filename.split('.')[0]] = load(models_path + filename)
     except:
         pass
@@ -108,6 +108,29 @@ def short_uuid():
     import uuid
     return uuid.uuid4().hex
 
+def dump_models_config(model_objects, columns, db_name, subset_name):
+    import json
+
+    models_config = {}
+    for label, model in zip(columns, model_objects):
+        feature_names = columns.copy()
+        del (feature_names[label])
+        weights = model.coef_
+
+        model_config = {}
+        model_config["intercept"] = model.intercept_[0]
+        features = {}
+        for i, feature_name in enumerate(feature_names):
+            feature = {}
+            feature["coef"] = weights[0][i]
+            features[feature_name] = feature
+        model_config["features"] = features
+        models_config[label] = model_config
+
+    with open('data/database/' + db_name + '/subsets/' + subset_name + '/models_config.json') as outfile:
+        json.dump(models_config, outfile)
+
+    return models_config
 
 # Writes models with their labels into 'data/models'
 def dump_models(models, labels):

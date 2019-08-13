@@ -49,7 +49,7 @@ def retrain_models():
         df = io.mongo2df(db, collection)
     except:
         abort(503, description='Something went wrong with loading data from the mongoDB. Make sure it is running!')
-    model_objects, _ = learn.train_models(df, labels, None)
+    model_objects, _ = learn.train_models(df, labels)
     io.dump_models(model_objects, labels)
     imputer = learn.train_imputer(df)
     io.dump_objects([imputer], ["imputer"])
@@ -83,4 +83,19 @@ def show_subset(db_name, subset_name):
 
 @app.route('/database/<db_name>/subset/<subset_name>/train', methods=['POST'])
 def train_subset(db_name, subset_name):
-    return
+    try:
+        df = io.mongo2df(db_name, subset_name)
+    except:
+        abort(503, description='Something went wrong with loading data from the mongoDB. Make sure it is running!')
+
+    labels = df.columns.format()
+    model_objects, _ = learn.train_models(df)
+    io.dump_models_config(model_objects, labels, db_name, subset_name)
+    io.dump_models(model_objects, labels, db_name, subset_name) # TODO: give db and subset name
+
+    imputer = learn.train_imputer(df)
+    io.dump_objects([imputer], ["imputer"], 'database/' + db_name + '/subset/' + subset_name + '/objects/')
+
+    io.dump_config(df, imputer, db_name, subset_name)
+
+    return show_subset(db_name, subset_name)

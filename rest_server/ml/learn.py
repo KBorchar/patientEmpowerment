@@ -1,6 +1,6 @@
 # Train models and simultaneously test them. Output some test visuals to file.
 
-def train_models(df, labels, correlator=None):
+def train_models(df, labels=None, correlator=None):
     from sklearn import linear_model
     from sklearn.model_selection import train_test_split
     import matplotlib.pyplot as plt
