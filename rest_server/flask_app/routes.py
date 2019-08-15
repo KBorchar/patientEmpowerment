@@ -62,7 +62,13 @@ def show_databases():
 # Redundant; same as show_subsets. Kept for robustness.
 @app.route('/database/<db_name>', methods=['GET'])
 def show_database(db_name):
-    return jsonify(io.database(db_name))
+    database = io.database(db_name)
+    if db_name == 'ukbb':
+        try:
+            database['demo'] = io.demo_subset()
+        except:
+            pass
+    return jsonify(database)
 
 @app.route('/database/<db_name>/subsets', methods=['GET'])
 def show_subsets(db_name):
@@ -74,6 +80,12 @@ def show_subset(db_name, subset_name):
 
 @app.route('/database/<db_name>/subset/<subset_name>/train', methods=['POST'])
 def train_subset(db_name, subset_name):
+    # early exit in case the pre-generated demo subset was requested
+    if db_name == 'ukbb' and subset_name == 'demo':
+        try:
+            return jsonify(io.demo_subset())
+        except:
+            return 404
     try:
         df = io.mongo2df(db_name, subset_name)
     except:

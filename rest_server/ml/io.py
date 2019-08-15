@@ -26,6 +26,13 @@ def subsets(db_name):
         subsets[s] = subset(db_name, s)
     return subsets
 
+def demo_subset():
+    import json
+
+    with open('data/databases/ukbb/subsets/demo/demoSubset.json') as infile:
+        json_string = infile.read()
+        return json.loads(json_string)
+
 def subset(db_name, subset_name):
     ensure_dir_existence(db_name, subset_name)
     return {
