@@ -65,7 +65,9 @@ def show_database(db_name):
     database = io.database(db_name)
     if db_name == 'ukbb':
         try:
-            database['demo'] = io.demo_subset()
+            database['demo'] = io.demo_subset('demo')
+            database['demoMale'] = io.demo_subset('demoMale')
+            database['demoFemale'] = io.demo_subset('demoFemale')
         except:
             pass
     return jsonify(database)
@@ -81,9 +83,9 @@ def show_subset(db_name, subset_name):
 @app.route('/database/<db_name>/subset/<subset_name>/train', methods=['POST'])
 def train_subset(db_name, subset_name):
     # early exit in case the pre-generated demo subset was requested
-    if db_name == 'ukbb' and subset_name == 'demo':
+    if db_name == 'ukbb' and subset_name.startswith('demo'):
         try:
-            return jsonify(io.demo_subset())
+            return jsonify(io.demo_subset(subset_name))
         except:
             return 404
     try:

@@ -26,10 +26,10 @@ def subsets(db_name):
         subsets[s] = subset(db_name, s)
     return subsets
 
-def demo_subset():
+def demo_subset(subset_name):
     import json
 
-    with open('data/databases/ukbb/subsets/demo/demoSubset.json') as infile:
+    with open('data/databases/ukbb/subsets/' + subset_name + '/demoSubset.json') as infile:
         json_string = infile.read()
         return json.loads(json_string)
 
