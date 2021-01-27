@@ -141,8 +141,20 @@ The request body should be formatted like this:
 The server's response will look like this:
 
     {
-        <label1>: <prediction1>,
-        <label2>: <prediction2>,
+        <label1>: {
+            "features": {
+                <feature1>: {
+                    "coef": <feature1-coef>,
+                    "mean": <feature1-mean>
+                },
+                <feature2>: {
+                    "coef": <feature2-coef>,
+                    "mean": <feature2-mean>
+                },
+                ...
+            },
+            "intercept": <label1-intercept>
+        }
         ...
     }
     
